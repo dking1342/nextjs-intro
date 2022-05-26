@@ -1,37 +1,34 @@
 /* eslint-disable @next/next/no-img-element */
+import React, { useState, useEffect } from "react";
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import Link from "next/link";
 
-export const getStaticProps = async () => {
-  let loading = false
-  let error = ""
-  let data = [];
-  try {
-    loading = true;
-    const response = await fetch("https://jherr-pokemon.s3.us-west-1.amazonaws.com/index.json");
-    const payload = await response.json();
-    if(payload){
-      data = payload
-    } else {
-      error = "Error when fetching";
-    }
-  } catch (err) {
-    error = err.message
-  } finally {
-    loading = false;
-  }
+export default function Home() {
+  const [pokemon, setPokemon] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  return {
-    props: {
-      pokemon: data,
-      loading,
-      error
+  useEffect(()=>{
+    const getPokemon = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch("https://jherr-pokemon.s3.us-west-1.amazonaws.com/index.json");
+        const data = await response.json();
+        if(data){
+          setPokemon(data);
+        } else {
+          setError("Error when fetching")
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
-}
+    getPokemon();
+  },[])
 
-export default function Home({ pokemon, loading, error }) {
   if(loading){
     return (
       <div className={styles.container}>

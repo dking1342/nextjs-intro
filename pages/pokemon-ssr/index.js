@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
+import React, { useState, useEffect } from "react";
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import Link from "next/link";
 
-export const getStaticProps = async () => {
+export const getServerSideProps = async () => {
   let loading = false
   let error = ""
   let data = [];
