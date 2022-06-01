@@ -1,0 +1,8 @@
+query getPosts {
+  getPosts {
+    id
+    userId
+    title
+    body
+  }
+}
