@@ -1,11 +1,36 @@
 import Link from 'next/link'
 import dbConnect from '../lib/dbConnect'
-import Pet from '../models/Pet'
+import Todo from "../models/Todo";
 
-const Index = ({ pets }) => (
+/* Retrieves pet(s) data from mongodb database */
+export async function getServerSideProps() {
+  try {
+    await dbConnect()
+  
+    const result = await Todo.find({});
+    const todos = result.map((doc) => {
+      const todo = doc.toObject()
+      todo._id = todo._id.toString()
+      todo.createdAt = Math.floor(todo.createdAt / 1000);
+      todo.updatedAt = Math.floor(todo.updatedAt / 1000);
+      return todo
+    })
+    console.log(todos)
+  
+    return { props: { todos }}
+    
+  } catch (error) {
+    return { props: { error }}    
+  }
+}
+
+
+const Index = ({ todos }) => (
   <>
-    {/* Create a card for each pet */}
-    {pets.map((pet) => (
+    <div>
+      { JSON.stringify(todos)}
+    </div>
+    {/* {pets.map((pet) => (
       <div key={pet._id}>
         <div className="card">
           <img src={pet.image_url} />
@@ -14,7 +39,6 @@ const Index = ({ pets }) => (
             <p className="pet-name">{pet.name}</p>
             <p className="owner">Owner: {pet.owner_name}</p>
 
-            {/* Extra Pet Info: Likes and Dislikes */}
             <div className="likes info">
               <p className="label">Likes</p>
               <ul>
@@ -43,23 +67,9 @@ const Index = ({ pets }) => (
           </div>
         </div>
       </div>
-    ))}
+    ))} */}
   </>
 )
 
-/* Retrieves pet(s) data from mongodb database */
-export async function getServerSideProps() {
-  await dbConnect()
-
-  /* find all the data in our database */
-  const result = await Pet.find({})
-  const pets = result.map((doc) => {
-    const pet = doc.toObject()
-    pet._id = pet._id.toString()
-    return pet
-  })
-
-  return { props: { pets: pets } }
-}
 
 export default Index
